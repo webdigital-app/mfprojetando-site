@@ -420,7 +420,7 @@ img {
 /* Cinematic Hero Masking */
 .hero {
     height: 100vh;
-    background-image: url('assets/images/hero.png');
+    background-image: url('/assets/images/hero.png');
     background-size: cover;
     background-position: center;
     position: relative;
@@ -534,7 +534,7 @@ img {
     border-radius: var(--radius-md);
     color: #CCC;
     font-weight: 500;
-    background-image: url('assets/images/about.png');
+    background-image: url('/assets/images/about.png');
     /* Local Asset */
     background-size: cover;
     background-position: center;

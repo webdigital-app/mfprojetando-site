@@ -77,7 +77,7 @@ async function initContent() {
     if (projectsContainer && projects && projects.length > 0) {
       projectsContainer.innerHTML = projects.map(project => `
           <article class="project-card">
-              <div class="project-image" style="background-image: url('${project.image_url || 'assets/images/hero.png'}')"></div>
+              <div class="project-image" style="background-image: url('${project.image_url || '/assets/images/hero.png'}')"></div>
               <div class="project-info">
               <h3>${project.title}</h3>
               <p>${project.description}</p>
