@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MF Admin | Gerenciamento de Projetos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4A0E19;
+            --accent: #C5A085;
+            --bg: #F9F7F5;
+            --text: #2D2426;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-right: 1px solid #eee;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item {
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #666;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #FDF9F6;
+            color: var(--primary);
+        }
+
+        .logout {
+            margin-top: auto;
+            color: #dc3545;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        /* Forms & Cards */
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: #7A1F30;
+        }
+
+        /* Projects List */
+        .project-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .project-item {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: 0.3s;
+        }
+
+        .project-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .project-thumb {
+            height: 180px;
+            background: #eee;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .project-details {
+            padding: 1rem;
+        }
+
+        .project-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            pt: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0;
+        }
+
+        .edit-btn {
+            color: var(--primary);
+        }
+
+        .del-btn {
+            color: #dc3545;
+        }
+
+        /* Auth Screen Overlay */
+        #auth-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 8px;
+            width: 350px;
+            text-align: center;
+        }
+
+        .status-msg {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Auth Screen (Simulated for now) -->
+    <div id="auth-screen">
+        <div class="login-box">
+            <h2 style="color: var(--primary); margin-bottom: 0.5rem;">MF Admin</h2>
+            <p style="margin-bottom: 2rem; color: #666;">Acesso Restrito</p>
+            <form id="login-form">
+                <div class="form-group" style="text-align: left;">
+                    <label>Email</label>
+                    <input type="email" placeholder="admin@mfprojetando.com" required>
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Senha</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Entrar</button>
+                <div id="db-status" class="status-msg">⚠️ Banco de dados não conectado</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Interface -->
+    <div class="sidebar">
+        <div class="admin-logo">
+            <span>MF ADMIN</span>
+        </div>
+        <div class="nav-item active" onclick="switchTab('dashboard')">🏠 Dashboard</div>
+        <div class="nav-item" onclick="switchTab('projects')">📁 Projetos</div>
+        <div class="nav-item" onclick="switchTab('settings')">⚙️ Configurações</div>
+        <div class="nav-item logout" onclick="location.reload()">Sair</div>
+    </div>
+
+    <div class="main">
+        <!-- Dashboard Tab -->
+        <div id="tab-dashboard" class="tab-content">
+            <div class="header-bar">
+                <h1>Painel de Controle</h1>
+            </div>
+            <div class="card" style="margin-bottom: 2rem;">
+                <h3 style="margin-top:0">Bem-vindo(a)!</h3>
+                <p>Utilize o menu lateral para gerenciar as seções do site.</p>
+            </div>
+            <div class="dashboard-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="card" style="text-align: center;">
+                    <h2>Projetos</h2>
+                    <p style="font-size: 2rem; font-weight: bold; color: var(--primary);" id="total-projects">-</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h2>Status</h2>
+                    <p style="color: green; font-weight: bold;">Online 🟢</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Tab -->
+        <div id="tab-projects" class="tab-content" style="display: none;">
+            <div class="header-bar">
+                <h1>Gerenciar Projetos</h1>
+                <button class="btn" onclick="openProjectModal()">+ Novo Projeto</button>
+            </div>
+            <div class="project-list" id="project-list-container">
+                <!-- Projects Rendered Here -->
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="tab-settings" class="tab-content" style="display: none;">
+            <div class="header-bar">
+                <h1>Configurações do Site</h1>
+            </div>
+            <div id="settings-container">
+                <!-- Settings Rendered Here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="project-modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:200;">
+        <div class="card" style="width: 500px; margin: 5vh auto; max-height: 90vh; overflow-y: auto;">
+            <h2 id="modal-title">Novo Projeto</h2>
+            <form id="project-form">
+                <input type="hidden" id="p-id">
+                <div class="form-group">
+                    <label>Título do Projeto</label>
+                    <input type="text" id="p-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição Curta</label>
+                    <input type="text" id="p-desc" required>
+                </div>
+                <div class="form-group">
+                    <label>Imagem (URL ou Upload)</label>
+                    <!-- Simple text input for URL for now, upload logic via service could be added here -->
+                    <input type="text" id="p-image" placeholder="Cole o link da imagem ou upload em breve">
+                </div>
+                <!-- Future Upload Field
+                <div class="form-group">
+                    <label>Upload de Foto</label>
+                    <input type="file" id="p-file">
+                </div> 
+                -->
+                <div style="text-align: right;">
+                    <button type="button" class="btn" style="background:#ccc; color:#333"
+                        onclick="closeProjectModal()">Cancelar</button>
+                    <button type="submit" class="btn">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getProjects, createProject, deleteProject } from './js/services/projectService.js';
+        import { getSettings, updateSetting } from './js/services/settingsService.js';
+
+        // Tabs Logic
+        window.switchTab = (tabName) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            document.getElementById('tab-' + tabName).style.display = 'block';
+
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            // Highlight logic approx
+            if (event && event.target) event.target.classList.add('active');
+
+            if (tabName === 'projects') loadProjectsUI();
+            if (tabName === 'settings') loadSettingsUI();
+            if (tabName === 'dashboard') updateStats();
+        };
+
+        // UI Loaders
+        async function loadProjectsUI() {
+            const container = document.getElementById('project-list-container');
+            container.innerHTML = 'Carregando...';
+            const projects = await getProjects();
+
+            if (!projects || projects.length === 0) {
+                container.innerHTML = '<p>Nenhum projeto encontrado.</p>';
+                return;
+            }
+
+            container.innerHTML = projects.map(p => `
+                <div class="project-item">
+                    <div class="project-thumb" style="background-image: url('${p.image_url}')"></div>
+                    <div class="project-details">
+                        <h4 style="margin: 0 0 5px 0">${p.title}</h4>
+                        <p style="font-size: 0.85rem; color: #777; margin: 0;">${p.description}</p>
+                        <div class="project-actions">
+                            <button class="action-btn edit-btn" onclick="alert('Edição simplificada: Delete e Crie novamente por enquanto')">Editar</button>
+                            <button class="action-btn del-btn" onclick="deleteItem('${p.id}')">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Allow delete globally
+            window.deleteItem = async (id) => {
+                if (confirm('Tem certeza?')) {
+                    await deleteProject(id);
+                    loadProjectsUI();
+                }
+            }
+        }
+
+        async function loadSettingsUI() {
+            const container = document.getElementById('settings-container');
+            container.innerHTML = 'Carregando...';
+            const settings = await getSettings();
+
+            // Group by category
+            const groups = settings.reduce((acc, item) => {
+                acc[item.category] = acc[item.category] || [];
+                acc[item.category].push(item);
+                return acc;
+            }, {});
+
+            let html = '';
+            for (const [cat, items] of Object.entries(groups)) {
+                html += `<div class="card" style="margin-bottom: 2rem;"><h3>${cat}</h3>`;
+                items.forEach(item => {
+                    html += `
+                        <div class="form-group">
+                            <label>${item.label}</label>
+                            <input type="text" value="${item.value || ''}" onchange="saveSetting('${item.key}', this.value)">
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+            container.innerHTML = html;
+
+            window.saveSetting = async (key, val) => {
+                await updateSetting(key, val);
+                // Optional toast
+                console.log('Saved', key);
+            }
+        }
+
+        async function updateStats() {
+            const p = await getProjects();
+            document.getElementById('total-projects').innerText = p ? p.length : 0;
+        }
+
+        // Project Modal
+        window.openProjectModal = () => document.getElementById('project-modal').style.display = 'block';
+        window.closeProjectModal = () => document.getElementById('project-modal').style.display = 'none';
+
+        document.getElementById('project-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('p-title').value;
+            const description = document.getElementById('p-desc').value;
+            const image_url = document.getElementById('p-image').value;
+
+            await createProject({ title, description, image_url });
+            closeProjectModal();
+            loadProjectsUI();
+        });
+
+        // Init
+        // Auto-login bypass for now
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            document.getElementById('auth-screen').style.display = 'none';
+            updateStats();
+        });
+
+    </script>
+</body>
+
+</html>
