@@ -1,120 +1,210 @@
-
-// Mobile Menu Logic
-const mobileBtn = document.querySelector('.mobile-menu-btn');
-const nav = document.querySelector('.nav');
-const navList = document.querySelector('.nav-list');
-
-if (mobileBtn) {
-  mobileBtn.addEventListener('click', () => {
-    navList.classList.toggle('active');
-    mobileBtn.classList.toggle('active');
-
-    // Mobile menu style injection for simplicity
-    if (navList.classList.contains('active')) {
-      Object.assign(navList.style, {
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'absolute',
-        top: '100%',
-        left: '0',
-        width: '100%',
-        backgroundColor: 'white',
-        padding: '2rem',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-        borderTop: '1px solid #eee'
-      });
-    } else {
-      navList.style.display = ''; // Reset to CSS default
-    }
-  });
-}
-
-// Smooth Scroll for Anchor Links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    if (this.getAttribute('href') === '#') return;
-
-    e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      if (window.innerWidth <= 768 && navList) {
-        navList.classList.remove('active');
-        navList.style.display = '';
-      }
-
-      const headerOffset = 80;
-      const elementPosition = target.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-    }
-  });
-});
-
-// Header Scroll Effect
-const header = document.querySelector('.header');
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 50) {
-    header.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-  } else {
-    header.style.boxShadow = 'none';
-  }
-});
-
+// MF Projetando - Main JavaScript
 import { getProjects } from './js/services/projectService.js';
 import { getSettings } from './js/services/settingsService.js';
 
-// Load Content Dynamically
-async function initContent() {
+document.addEventListener('DOMContentLoaded', () => {
+  // ========================================
+  // HEADER SCROLL EFFECT
+  // ========================================
+  const header = document.getElementById('header');
+
+  const handleScroll = () => {
+    if (window.scrollY > 50) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  handleScroll(); // Check on load
+
+  // ========================================
+  // MOBILE MENU
+  // ========================================
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const navList = document.querySelector('.nav-list');
+
+  mobileMenuBtn?.addEventListener('click', () => {
+    mobileMenuBtn.classList.toggle('active');
+    navList.classList.toggle('active');
+    document.body.style.overflow = navList.classList.contains('active') ? 'hidden' : '';
+  });
+
+  // Close menu when clicking a link
+  navList?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenuBtn.classList.remove('active');
+      navList.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // ========================================
+  // SCROLL REVEAL ANIMATIONS
+  // ========================================
+  const revealElements = document.querySelectorAll('.reveal');
+
+  const revealOnScroll = () => {
+    const windowHeight = window.innerHeight;
+
+    revealElements.forEach(element => {
+      const elementTop = element.getBoundingClientRect().top;
+      const revealPoint = 100;
+
+      if (elementTop < windowHeight - revealPoint) {
+        element.classList.add('active');
+      }
+    });
+  };
+
+  window.addEventListener('scroll', revealOnScroll);
+  revealOnScroll(); // Check on load
+
+  // ========================================
+  // SMOOTH SCROLL FOR ANCHOR LINKS
+  // ========================================
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        e.preventDefault();
+        const headerHeight = header.offsetHeight;
+        const targetPosition = targetElement.offsetTop - headerHeight;
+
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+
+  // ========================================
+  // CONTACT FORM HANDLING
+  // ========================================
+  const contactForm = document.getElementById('contactForm');
+
+  contactForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = {
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      interest: document.getElementById('interest').value,
+      message: document.getElementById('message').value
+    };
+
+    // Show loading state
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Enviando...';
+    submitBtn.disabled = true;
+
+    try {
+      // Format message for WhatsApp
+      const whatsappMessage = encodeURIComponent(
+        `*Nova mensagem do site MF Projetando*\n\n` +
+        `*Nome:* ${formData.name}\n` +
+        `*E-mail:* ${formData.email}\n` +
+        `*Telefone:* ${formData.phone || 'Não informado'}\n` +
+        `*Interesse:* ${formData.interest}\n` +
+        `*Mensagem:* ${formData.message || 'Não informada'}`
+      );
+
+      // Open WhatsApp with the message
+      window.open(`https://wa.me/5567993355026?text=${whatsappMessage}`, '_blank');
+
+      // Show success
+      submitBtn.textContent = 'Mensagem Enviada! ✓';
+      submitBtn.style.background = '#25D366';
+
+      // Reset form
+      contactForm.reset();
+
+      setTimeout(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.style.background = '';
+        submitBtn.disabled = false;
+      }, 3000);
+
+    } catch (error) {
+      console.error('Erro ao enviar:', error);
+      submitBtn.textContent = 'Erro ao enviar';
+      submitBtn.style.background = '#dc3545';
+
+      setTimeout(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.style.background = '';
+        submitBtn.disabled = false;
+      }, 3000);
+    }
+  });
+
+  // ========================================
+  // LOAD DYNAMIC CONTENT FROM SUPABASE
+  // ========================================
+  loadDynamicContent();
+});
+
+async function loadDynamicContent() {
   try {
-    // 1. Projects
+    // Load Projects
     const projects = await getProjects();
-    const projectsContainer = document.querySelector('.projects-grid');
+    const projectsContainer = document.getElementById('projects-container');
 
     if (projectsContainer && projects && projects.length > 0) {
       projectsContainer.innerHTML = projects.map(project => `
-          <article class="project-card">
-              <div class="project-image" style="background-image: url('${project.image_url || '/assets/images/hero.png'}')"></div>
-              <div class="project-info">
-              <h3>${project.title}</h3>
-              <p>${project.description}</p>
-              <a href="#" class="btn-link">Ver Detalhes</a>
-              </div>
-          </article>
-      `).join('');
+                <article class="project-card reveal active">
+                    <div class="project-image" style="background-image: url('${project.image_url || '/assets/images/hero.png'}')"></div>
+                    <div class="project-info">
+                        <span class="project-category">Projeto</span>
+                        <h3>${project.title}</h3>
+                        <p>${project.description}</p>
+                        <a href="#" class="btn-link">Ver Detalhes <span>→</span></a>
+                    </div>
+                </article>
+            `).join('');
     }
 
-    // 2. Settings
+    // Load Settings (for dynamic content like phone, address, etc.)
     const settings = await getSettings();
+
     if (settings && settings.length > 0) {
-      const settingsMap = settings.reduce((acc, curr) => {
-        acc[curr.key] = curr.value;
-        return acc;
-      }, {});
-
-      // Hero Text
-      const heroTitle = document.getElementById('hero-title');
-      if (heroTitle && settingsMap.hero_title) heroTitle.innerHTML = settingsMap.hero_title;
-
-      const heroSubtitle = document.getElementById('hero-subtitle');
-      if (heroSubtitle && settingsMap.hero_subtitle) heroSubtitle.textContent = settingsMap.hero_subtitle;
-
-      // Socials & Contact
-      const updateLink = (selector, url) => {
-        document.querySelectorAll(selector).forEach(el => el.href = url || '#');
-      };
-
-      updateLink('a[href*="instagram"]', settingsMap.social_instagram);
-      updateLink('a[href*="facebook"]', settingsMap.social_facebook);
-      // Add more mappings as needed
+      settings.forEach(setting => {
+        // Update elements with matching data attributes
+        const elements = document.querySelectorAll(`[data-setting="${setting.key}"]`);
+        elements.forEach(el => {
+          if (el.tagName === 'A' && setting.key.includes('link')) {
+            el.href = setting.value;
+          } else {
+            el.textContent = setting.value;
+          }
+        });
+      });
     }
 
   } catch (error) {
-    console.log('Error initializing content:', error);
+    console.log('Erro ao carregar conteúdo dinâmico:', error);
+    // Site continues to work with static fallback content
   }
 }
 
-document.addEventListener('DOMContentLoaded', initContent);
+// ========================================
+// UTILITY: Debounce function
+// ========================================
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
