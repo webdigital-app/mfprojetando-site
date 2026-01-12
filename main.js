@@ -177,17 +177,22 @@ async function loadDynamicContent() {
             `).join('');
     }
 
-    // Load Settings (for dynamic content like phone, address, etc.)
+    // Load Settings
     const settings = await getSettings();
 
     if (settings && settings.length > 0) {
       settings.forEach(setting => {
-        // Update elements with matching data attributes
         const elements = document.querySelectorAll(`[data-setting="${setting.key}"]`);
         elements.forEach(el => {
-          if (el.tagName === 'A' && setting.key.includes('link')) {
-            el.href = setting.value;
-          } else {
+          if (el.tagName === 'A') {
+            // Se for link do WhatsApp, tratar URL
+            if (setting.key === 'whatsapp') {
+              const cleanPhone = setting.value.replace(/\D/g, '');
+              el.href = `https://wa.me/55${cleanPhone}`;
+            } else {
+              el.href = setting.value;
+            }
+          } else if (el.tagName === 'P' || el.tagName === 'SPAN' || el.tagName === 'DIV') {
             el.textContent = setting.value;
           }
         });
