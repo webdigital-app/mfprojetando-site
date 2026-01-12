@@ -24,18 +24,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // ========================================
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   const navList = document.querySelector('.nav-list');
+  const menuOverlay = document.getElementById('menu-overlay');
 
-  mobileMenuBtn?.addEventListener('click', () => {
-    mobileMenuBtn.classList.toggle('active');
-    navList.classList.toggle('active');
-    document.body.style.overflow = navList.classList.contains('active') ? 'hidden' : '';
-  });
+  const toggleMenu = () => {
+    mobileMenuBtn?.classList.toggle('active');
+    navList?.classList.toggle('active');
+    menuOverlay?.classList.toggle('active');
+    document.body.style.overflow = navList?.classList.contains('active') ? 'hidden' : '';
+  };
+
+  mobileMenuBtn?.addEventListener('click', toggleMenu);
+  menuOverlay?.addEventListener('click', toggleMenu);
 
   // Close menu when clicking a link
   navList?.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
-      mobileMenuBtn.classList.remove('active');
-      navList.classList.remove('active');
+      mobileMenuBtn?.classList.remove('active');
+      navList?.classList.remove('active');
+      menuOverlay?.classList.remove('active');
       document.body.style.overflow = '';
     });
   });
