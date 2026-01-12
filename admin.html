@@ -1186,16 +1186,75 @@
         }
 
         // ========================================
-        // AUTH
+        // AUTH - Real Supabase Authentication
         // ========================================
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            // Simplified auth - just hide the screen
-            document.getElementById('auth-screen').style.display = 'none';
-            updateStats();
+        const { supabase } = await import('./js/supabase.js');
+
+        // Check if user is already logged in
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                document.getElementById('auth-screen').style.display = 'none';
+                updateStats();
+            }
+        }
+
+        checkAuth();
+
+        // Listen for auth changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                document.getElementById('auth-screen').style.display = 'none';
+                updateStats();
+            } else if (event === 'SIGNED_OUT') {
+                document.getElementById('auth-screen').style.display = 'flex';
+            }
         });
 
-        window.logout = () => {
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const statusEl = document.getElementById('auth-status');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+
+            // Show loading
+            submitBtn.textContent = 'Entrando...';
+            submitBtn.disabled = true;
+            statusEl.style.display = 'none';
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) {
+                    statusEl.textContent = 'E-mail ou senha incorretos';
+                    statusEl.className = 'auth-status error';
+                    statusEl.style.display = 'block';
+                    submitBtn.textContent = 'Entrar';
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                // Success - the onAuthStateChange will handle the redirect
+                statusEl.textContent = 'Login realizado com sucesso!';
+                statusEl.className = 'auth-status success';
+                statusEl.style.display = 'block';
+
+            } catch (err) {
+                statusEl.textContent = 'Erro ao conectar. Tente novamente.';
+                statusEl.className = 'auth-status error';
+                statusEl.style.display = 'block';
+                submitBtn.textContent = 'Entrar';
+                submitBtn.disabled = false;
+            }
+        });
+
+        window.logout = async () => {
+            await supabase.auth.signOut();
             location.reload();
         };
 
