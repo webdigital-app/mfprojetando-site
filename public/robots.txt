@@ -1,0 +1,10 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://mfprojetando.webdigital.app/sitemap.xml
+
+# Bloquear admin
+Disallow: /admin.html
+Disallow: /admin

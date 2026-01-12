@@ -748,6 +748,48 @@
         }
 
         /* ========================================
+           SETTINGS TABS
+           ======================================== */
+        .settings-tab-btn {
+            padding: 10px 20px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+        }
+
+        .settings-tab-btn:hover {
+            background: var(--surface);
+            border-color: var(--accent);
+        }
+
+        .settings-tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .char-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .char-count.warning {
+            color: #F59E0B;
+        }
+
+        .char-count.danger {
+            color: var(--danger);
+        }
+
+        /* ========================================
            RESPONSIVE
            ======================================== */
         @media (max-width: 1200px) {
@@ -949,20 +991,57 @@
                 <div class="page-header">
                     <div class="page-title">
                         <h1>Configurações</h1>
-                        <p>Personalize as informações do site</p>
+                        <p>SEO, Marketing e informações do site</p>
                     </div>
-                    <span class="save-indicator" id="save-indicator">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        Salvo automaticamente
-                    </span>
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <span class="save-indicator" id="save-indicator">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            Alterações salvas
+                        </span>
+                        <button class="btn btn-primary" onclick="saveAllSettings()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            Salvar Tudo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Settings Categories Tabs -->
+                <div class="settings-tabs" style="display: flex; gap: 8px; margin-bottom: 24px;">
+                    <button class="settings-tab-btn active" onclick="switchSettingsTab('seo')">🔍 SEO</button>
+                    <button class="settings-tab-btn" onclick="switchSettingsTab('marketing')">📊 Marketing</button>
+                    <button class="settings-tab-btn" onclick="switchSettingsTab('contato')">📞 Contato</button>
+                    <button class="settings-tab-btn" onclick="switchSettingsTab('social')">🌐 Redes Sociais</button>
                 </div>
 
                 <div class="content-card">
                     <div class="card-body" id="settings-container">
                         <!-- Settings loaded here -->
+                    </div>
+                </div>
+
+                <!-- SEO Tips -->
+                <div class="content-card" style="margin-top: 24px; border-left: 4px solid var(--accent);">
+                    <div class="card-body">
+                        <h3 style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <span>💡</span> Dicas de SEO
+                        </h3>
+                        <ul style="color: var(--text-muted); line-height: 1.8; padding-left: 20px;">
+                            <li><strong>Título SEO:</strong> Use 50-60 caracteres. Inclua palavras-chave principais.
+                            </li>
+                            <li><strong>Descrição:</strong> Use 150-160 caracteres. Seja persuasivo e claro.</li>
+                            <li><strong>Palavras-chave:</strong> Separe por vírgula. Use termos que seus clientes
+                                buscariam.</li>
+                            <li><strong>Imagem OG:</strong> Use imagem 1200x630px para compartilhamento em redes
+                                sociais.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -1127,39 +1206,134 @@
         // ========================================
         // SETTINGS
         // ========================================
-        async function loadSettings() {
+        let allSettings = [];
+        let currentSettingsCategory = 'SEO';
+
+        async function loadSettings(filterCategory = null) {
             const container = document.getElementById('settings-container');
             container.innerHTML = '<p style="color: var(--text-muted);">Carregando...</p>';
 
             try {
-                const settings = await getSettings();
-
-                // Group by category
-                const groups = settings.reduce((acc, item) => {
-                    acc[item.category] = acc[item.category] || [];
-                    acc[item.category].push(item);
-                    return acc;
-                }, {});
-
-                let html = '';
-                for (const [cat, items] of Object.entries(groups)) {
-                    html += `<div class="settings-section"><h3>${cat}</h3><div class="form-grid">`;
-                    items.forEach(item => {
-                        html += `
-                            <div class="form-group">
-                                <label>${item.label}</label>
-                                <input type="text" value="${item.value || ''}" data-key="${item.key}" onchange="saveSetting(this)">
-                            </div>
-                        `;
-                    });
-                    html += `</div></div>`;
-                }
-
-                container.innerHTML = html || '<p>Nenhuma configuração encontrada</p>';
+                allSettings = await getSettings();
+                renderSettings(filterCategory || currentSettingsCategory);
             } catch (error) {
                 container.innerHTML = '<p style="color: var(--danger);">Erro ao carregar configurações</p>';
             }
         }
+
+        function renderSettings(category) {
+            const container = document.getElementById('settings-container');
+            currentSettingsCategory = category;
+
+            // Filter by category
+            const filtered = allSettings.filter(item =>
+                item.category.toLowerCase() === category.toLowerCase()
+            );
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted); padding: 40px; text-align: center;">Nenhuma configuração encontrada para "${category}"</p>`;
+                return;
+            }
+
+            let html = '<div class="form-grid">';
+            filtered.forEach(item => {
+                const isTextarea = item.key.includes('description') || item.key.includes('keywords');
+                const maxLength = item.key.includes('title') ? 60 : item.key.includes('description') ? 160 : null;
+                const currentLength = (item.value || '').length;
+
+                if (isTextarea) {
+                    html += `
+                        <div class="form-group full-width">
+                            <label>${item.label}</label>
+                            <textarea data-key="${item.key}" rows="3" ${maxLength ? `maxlength="${maxLength * 2}"` : ''} oninput="updateCharCount(this, ${maxLength})">${item.value || ''}</textarea>
+                            ${maxLength ? `<div class="char-count ${currentLength > maxLength ? 'danger' : currentLength > maxLength * 0.8 ? 'warning' : ''}" id="count-${item.key}">${currentLength}/${maxLength} caracteres</div>` : ''}
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="form-group ${item.key.includes('analytics') || item.key.includes('pixel') || item.key.includes('tag') ? 'full-width' : ''}">
+                            <label>${item.label}</label>
+                            <input type="text" value="${item.value || ''}" data-key="${item.key}" placeholder="${getPlaceholder(item.key)}">
+                            ${item.key.includes('analytics') ? '<small style="color: var(--text-muted); font-size: 0.8rem;">Encontre em: Google Analytics > Admin > Fluxos de Dados > ID da Medição</small>' : ''}
+                            ${item.key.includes('pixel') ? '<small style="color: var(--text-muted); font-size: 0.8rem;">Encontre em: Facebook Business > Gerenciador de Eventos > Pixel</small>' : ''}
+                        </div>
+                    `;
+                }
+            });
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        function getPlaceholder(key) {
+            const placeholders = {
+                'google_analytics': 'G-XXXXXXXXXX',
+                'facebook_pixel': '123456789012345',
+                'google_tag_manager': 'GTM-XXXXXXX',
+                'og_image': 'https://seusite.com/imagem.jpg',
+                'whatsapp': '(67) 99999-9999',
+                'instagram': '@seuinstagram',
+                'facebook': 'facebook.com/suapagina'
+            };
+            return placeholders[key] || '';
+        }
+
+        window.updateCharCount = (el, max) => {
+            const count = el.value.length;
+            const countEl = document.getElementById('count-' + el.dataset.key);
+            if (countEl) {
+                countEl.textContent = `${count}/${max} caracteres`;
+                countEl.className = 'char-count ' + (count > max ? 'danger' : count > max * 0.8 ? 'warning' : '');
+            }
+        };
+
+        window.switchSettingsTab = (category) => {
+            // Update button states
+            document.querySelectorAll('.settings-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(category.toLowerCase())) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Map button labels to category names
+            const categoryMap = {
+                'seo': 'SEO',
+                'marketing': 'Marketing',
+                'contato': 'Contato',
+                'social': 'Redes Sociais'
+            };
+
+            renderSettings(categoryMap[category] || category);
+        };
+
+        window.saveAllSettings = async () => {
+            const inputs = document.querySelectorAll('#settings-container input, #settings-container textarea');
+            const btn = document.querySelector('[onclick="saveAllSettings()"]');
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = '<span style="display: inline-flex; align-items: center; gap: 8px;">Salvando...</span>';
+            btn.disabled = true;
+
+            try {
+                for (const input of inputs) {
+                    await updateSetting(input.dataset.key, input.value);
+                }
+
+                showToast('Todas as configurações foram salvas!', 'success');
+
+                // Show indicator
+                const indicator = document.getElementById('save-indicator');
+                indicator.classList.add('show');
+                setTimeout(() => indicator.classList.remove('show'), 3000);
+
+            } catch (error) {
+                showToast('Erro ao salvar configurações', 'error');
+            }
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        };
 
         window.saveSetting = async (input) => {
             const key = input.dataset.key;
