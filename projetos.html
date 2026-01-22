@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Projetos - MF Projetando | Portfólio de Design de Interiores</title>
+    <meta name="description" content="Conheça nossos projetos de design de interiores e móveis planejados. Transformações incríveis em Campo Grande MS." />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div id="app">
+        <header class="header scrolled" id="header">
+            <div class="container header-content">
+                <a href="index.html" class="logo-container">
+                    <div class="logo-typography">
+                        <span class="logo-main">MF</span>
+                        <div class="logo-details">
+                            <span class="logo-secondary">PROJETANDO</span>
+                            <span class="logo-tagline">O DESIGN ACESSÍVEL</span>
+                        </div>
+                    </div>
+                </a>
+                <nav class="nav" id="nav">
+                    <ul class="nav-list">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="sobre.html">Sobre</a></li>
+                        <li><a href="projetos.html" class="active">Projetos</a></li>
+                        <li><a href="moveis.html">Móveis</a></li>
+                        <li><a href="contato.html" class="btn-contact">Contato</a></li>
+                    </ul>
+                </nav>
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <div class="menu-overlay" id="menu-overlay"></div>
+        </header>
+
+        <main>
+            <!-- Hero Section -->
+            <section class="hero" style="min-height: 60vh; padding-top: 120px;">
+                <div class="hero-overlay"></div>
+                <div class="hero-content reveal">
+                    <span class="hero-tagline" data-content="projetos_tagline">Portfólio</span>
+                    <h1 class="hero-title" data-content="projetos_titulo">Nossos <em>Projetos</em></h1>
+                    <p class="hero-subtitle" data-content="projetos_subtitulo">Conheça algumas das transformações que realizamos com muito carinho e dedicação.</p>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section class="section projects-section">
+                <div class="container">
+                    <div class="section-header center reveal">
+                        <span class="tagline" data-content="projetos_secao_tagline">Transformações</span>
+                        <h2 class="section-title" data-content="projetos_secao_titulo">Cada Projeto é <em>Único</em></h2>
+                        <p class="section-subtitle" data-content="projetos_secao_descricao">Desenvolvemos soluções personalizadas que refletem a personalidade e necessidades de cada cliente.</p>
+                    </div>
+
+                    <div class="projects-grid" id="projects-container">
+                        <!-- Projects loaded dynamically -->
+                        <article class="project-card reveal">
+                            <div class="project-image" style="background-image: url('/assets/images/hero.png')"></div>
+                            <div class="project-info">
+                                <span class="project-category">Residencial</span>
+                                <h3>Residencial Alto Padrão</h3>
+                                <p>Projeto completo de interiores</p>
+                                <a href="#" class="btn-link">Ver Detalhes <span>→</span></a>
+                            </div>
+                        </article>
+                        <article class="project-card reveal">
+                            <div class="project-image" style="background-image: url('/assets/images/project2.png')"></div>
+                            <div class="project-info">
+                                <span class="project-category">Comercial</span>
+                                <h3>Apartamento Studio</h3>
+                                <p>Otimização inteligente de espaço</p>
+                                <a href="#" class="btn-link">Ver Detalhes <span>→</span></a>
+                            </div>
+                        </article>
+                        <article class="project-card reveal">
+                            <div class="project-image" style="background-image: url('/assets/images/project1.png')"></div>
+                            <div class="project-info">
+                                <span class="project-category">Gourmet</span>
+                                <h3>Área Gourmet</h3>
+                                <p>Conforto e sofisticação</p>
+                                <a href="#" class="btn-link">Ver Detalhes <span>→</span></a>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="center" style="margin-top: 40px;">
+                        <a href="contato.html" class="btn btn-primary">Solicitar Orçamento</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section class="section services-section">
+                <div class="container">
+                    <div class="section-header center reveal">
+                        <span class="tagline" data-content="servicos_tagline">Nossos Serviços</span>
+                        <h2 class="section-title" data-content="servicos_titulo">Soluções Completas em Design</h2>
+                    </div>
+
+                    <div class="services-grid">
+                        <div class="service-card reveal">
+                            <div class="service-icon-wrapper">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M3 21h18M3 7v14m18-14v14M6 11h4m-4 4h4m6-4h2m-2 4h2M3 3h18v4H3V3z" />
+                                </svg>
+                            </div>
+                            <h3 data-content="servico_1_titulo">Projetos de Interiores</h3>
+                            <p data-content="servico_1_descricao">Desenvolvimento completo de layouts, escolha de revestimentos, iluminação e decoração.</p>
+                            <ul class="service-features">
+                                <li data-content="servico_1_item_1">Planta Baixa Humanizada</li>
+                                <li data-content="servico_1_item_2">Imagens 3D Realistas</li>
+                                <li data-content="servico_1_item_3">Detalhamento Técnico</li>
+                            </ul>
+                        </div>
+                        <div class="service-card reveal">
+                            <div class="service-icon-wrapper">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="2" y="14" width="20" height="7" rx="1" />
+                                    <path d="M4 14V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6" />
+                                    <path d="M12 6V3M8 14v-2m8 2v-2" />
+                                </svg>
+                            </div>
+                            <h3 data-content="servico_2_titulo">Móveis Planejados</h3>
+                            <p data-content="servico_2_descricao">Marcenaria sob medida de alto padrão. Otimização inteligente de cada milímetro.</p>
+                            <ul class="service-features">
+                                <li data-content="servico_2_item_1">Cozinhas & Áreas Gourmet</li>
+                                <li data-content="servico_2_item_2">Dormitórios & Closets</li>
+                                <li data-content="servico_2_item_3">Home Office & Escritórios</li>
+                            </ul>
+                        </div>
+                        <div class="service-card reveal">
+                            <div class="service-icon-wrapper">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                                </svg>
+                            </div>
+                            <h3 data-content="servico_3_titulo">Consultoria Online</h3>
+                            <p data-content="servico_3_descricao">Solução ágil para quem precisa de direcionamento profissional sem obra pesada.</p>
+                            <ul class="service-features">
+                                <li data-content="servico_3_item_1">Definição de Estilo</li>
+                                <li data-content="servico_3_item_2">Paleta de Cores</li>
+                                <li data-content="servico_3_item_3">Lista de Compras</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="container footer-content">
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-logo">
+                        <span class="logo-main">MF</span>
+                        <span class="logo-text">Projetando</span>
+                    </a>
+                    <p>Design que inspira. Móveis que duram.</p>
+                    <div class="social-icons">
+                        <a href="https://instagram.com/mfprojetando" target="_blank" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="2" y="2" width="20" height="20" rx="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                        <a href="https://facebook.com/mfprojetando" target="_blank" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg>
+                        </a>
+                        <a href="https://wa.me/5567993355026" target="_blank" aria-label="WhatsApp">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Links Rápidos</h4>
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="sobre.html">Sobre</a></li>
+                        <li><a href="projetos.html">Projetos</a></li>
+                        <li><a href="moveis.html">Móveis</a></li>
+                        <li><a href="contato.html">Contato</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contato</h4>
+                    <p data-setting="address">Campo Grande - MS</p>
+                    <p data-setting="whatsapp">(67) 99335-5026</p>
+                    <p data-setting="email">contato@mfprojetando.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 MF Projetando. Todos os direitos reservados.</p>
+                <p class="dev-credit">Desenvolvido por <a href="https://webdigital.app" target="_blank">Web Digital</a></p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/5567993355026?text=Olá! Vim pelo site e gostaria de um orçamento." class="whatsapp-float" target="_blank" aria-label="Fale conosco no WhatsApp">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+        </svg>
+    </a>
+
+    <script type="module" src="js/page-loader.js"></script>
+</body>
+
+</html>
