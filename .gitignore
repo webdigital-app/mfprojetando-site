@@ -6,3 +6,17 @@ dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Database setup files (contain sensitive info)
+create-site-settings-table.sql
+database-setup.sql
+fix-duplicate-settings.sql
+
+# Documentation files (generated)
+docs/
+CORRIGIR-DUPLICATAS.md
+MCP-CONFIGURADO.md
+README-ADMIN.md
+
+# MCP Configuration (contains sensitive tokens)
+.kiro/settings/mcp.json
