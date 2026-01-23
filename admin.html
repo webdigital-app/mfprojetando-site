@@ -996,6 +996,64 @@
                 </div>
             </div>
 
+            <!-- Content Tab -->
+            <div id="tab-content" class="tab-content">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>Conteúdo das Páginas</h1>
+                        <p>Edite os textos e conteúdos do site</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <span class="save-indicator" id="content-save-indicator">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            Alterações salvas
+                        </span>
+                        <button class="btn btn-primary" onclick="saveAllContent()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            Salvar Tudo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content Categories Tabs -->
+                <div class="content-tabs" style="display: flex; gap: 8px; margin-bottom: 24px;">
+                    <button class="settings-tab-btn active" onclick="switchContentTab('home')">🏠 Início</button>
+                    <button class="settings-tab-btn" onclick="switchContentTab('sobre')">👥 Sobre</button>
+                    <button class="settings-tab-btn" onclick="switchContentTab('projetos')">📁 Projetos</button>
+                    <button class="settings-tab-btn" onclick="switchContentTab('moveis')">🪑 Móveis</button>
+                    <button class="settings-tab-btn" onclick="switchContentTab('contato')">📞 Contato</button>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-body" id="content-container">
+                        <!-- Content loaded here -->
+                    </div>
+                </div>
+
+                <!-- Content Tips -->
+                <div class="content-card" style="margin-top: 24px; border-left: 4px solid var(--accent);">
+                    <div class="card-body">
+                        <h3 style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <span>💡</span> Dicas de Conteúdo
+                        </h3>
+                        <ul style="color: var(--text-muted); line-height: 1.8; padding-left: 20px;">
+                            <li><strong>Títulos:</strong> Use palavras-chave relevantes e seja claro sobre o benefício.</li>
+                            <li><strong>Descrições:</strong> Seja específico e focado no que o cliente ganha.</li>
+                            <li><strong>Chamadas para ação:</strong> Use verbos de ação como "Solicite", "Descubra", "Transforme".</li>
+                            <li><strong>Depoimentos:</strong> Mantenha autenticidade e especificidade nos resultados.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             <!-- Settings Tab -->
             <div id="tab-settings" class="tab-content">
                 <div class="page-header">
@@ -1101,7 +1159,7 @@
 
     <script type="module">
         import { getProjects, createProject, deleteProject } from './js/services/projectService.js';
-        import { getSettings, updateSetting } from './js/services/settingsService.js';
+        import { getSettings, updateSetting, getPageContent, updatePageContent } from './js/services/settingsService.js';
 
         // ========================================
         // TAB NAVIGATION
@@ -1117,13 +1175,15 @@
             // Highlight nav item
             const navItems = document.querySelectorAll('.nav-item');
             navItems.forEach(item => {
-                if (item.textContent.toLowerCase().includes(tabName === 'dashboard' ? 'dashboard' : tabName.substring(0, 4))) {
+                if (item.textContent.toLowerCase().includes(tabName === 'dashboard' ? 'dashboard' : 
+                    tabName === 'content' ? 'conteúdo' : tabName.substring(0, 4))) {
                     item.classList.add('active');
                 }
             });
 
             // Load content
             if (tabName === 'projects') loadProjects();
+            if (tabName === 'content') loadPageContent();
             if (tabName === 'settings') loadSettings();
             if (tabName === 'dashboard') updateStats();
         };
@@ -1212,6 +1272,113 @@
             loadProjects();
             updateStats();
         });
+
+        // ========================================
+        // PAGE CONTENT MANAGEMENT
+        // ========================================
+        let allPageContent = [];
+        let currentContentPage = 'home';
+
+        async function loadPageContent(filterPage = null) {
+            const container = document.getElementById('content-container');
+            container.innerHTML = '<p style="color: var(--text-muted);">Carregando...</p>';
+
+            try {
+                allPageContent = await getPageContent();
+                renderPageContent(filterPage || currentContentPage);
+            } catch (error) {
+                container.innerHTML = '<p style="color: var(--danger);">Erro ao carregar conteúdo</p>';
+            }
+        }
+
+        function renderPageContent(page) {
+            const container = document.getElementById('content-container');
+            currentContentPage = page;
+
+            // Filter by page
+            const filtered = allPageContent.filter(item =>
+                item.page.toLowerCase() === page.toLowerCase()
+            );
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted); padding: 40px; text-align: center;">Nenhum conteúdo encontrado para "${page}"</p>`;
+                return;
+            }
+
+            let html = '<div class="form-grid">';
+            filtered.forEach(item => {
+                const isTextarea = item.key.includes('paragrafo') || item.key.includes('descricao') || 
+                                  item.key.includes('texto') || item.key.includes('resposta') || 
+                                  item.value.length > 100;
+                
+                if (isTextarea) {
+                    html += `
+                        <div class="form-group full-width">
+                            <label>${item.label}</label>
+                            <textarea data-content-key="${item.key}" rows="3" oninput="markContentChanged()">${item.value || ''}</textarea>
+                            <small style="color: var(--text-muted); font-size: 0.8rem;">Use &lt;em&gt; para itálico, &lt;strong&gt; para negrito, &lt;br&gt; para quebra de linha</small>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="form-group">
+                            <label>${item.label}</label>
+                            <input type="text" value="${item.value || ''}" data-content-key="${item.key}" oninput="markContentChanged()">
+                        </div>
+                    `;
+                }
+            });
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        window.switchContentTab = (page) => {
+            // Update button states
+            document.querySelectorAll('.content-tabs .settings-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(page.toLowerCase())) {
+                    btn.classList.add('active');
+                }
+            });
+
+            renderPageContent(page);
+        };
+
+        window.markContentChanged = () => {
+            // Visual feedback that content has changed
+            const indicator = document.getElementById('content-save-indicator');
+            indicator.style.opacity = '0.5';
+        };
+
+        window.saveAllContent = async () => {
+            const inputs = document.querySelectorAll('#content-container input, #content-container textarea');
+            const btn = document.querySelector('[onclick="saveAllContent()"]');
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = '<span style="display: inline-flex; align-items: center; gap: 8px;">Salvando...</span>';
+            btn.disabled = true;
+
+            try {
+                for (const input of inputs) {
+                    await updatePageContent(input.dataset.contentKey, input.value);
+                }
+
+                showToast('Todo o conteúdo foi salvo!', 'success');
+
+                // Show indicator
+                const indicator = document.getElementById('content-save-indicator');
+                indicator.classList.add('show');
+                indicator.style.opacity = '1';
+                setTimeout(() => indicator.classList.remove('show'), 3000);
+
+            } catch (error) {
+                showToast('Erro ao salvar conteúdo', 'error');
+            }
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        };
 
         // ========================================
         // SETTINGS

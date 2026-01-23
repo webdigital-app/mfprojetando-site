@@ -24,3 +24,27 @@ export async function updateSetting(key, newValue) {
     if (error) throw error;
     return data;
 }
+
+export async function getPageContent() {
+    const { data, error } = await supabase
+        .from('page_content')
+        .select('*')
+        .order('page, key');
+
+    if (error) {
+        console.error('Error fetching page content:', error);
+        return [];
+    }
+    return data;
+}
+
+export async function updatePageContent(key, newValue) {
+    const { data, error } = await supabase
+        .from('page_content')
+        .update({ value: newValue })
+        .eq('key', key)
+        .select();
+
+    if (error) throw error;
+    return data;
+}

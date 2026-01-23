@@ -12,3 +12,4 @@ fix-duplicate-settings.sql
 docs/CORRIGIR-DUPLICATAS.md
 docs/MCP-CONFIGURADO.md
 docs/README-ADMIN.md
+.kiro/settings/mcp.json
